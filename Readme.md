@@ -85,7 +85,7 @@ systemctl restart xray
 Будет переустановлено ядро, восстановлена старая конфигурация, в том числе старые клиенты.
 
 ## Установка с транспортом XHTTP.
-Установка производится слудующей командой
+Установка производится слудующей командой. Внимание! Все пользователи будут удалены - их придется подключать заново.
 ```sh
 wget -qO- https://raw.githubusercontent.com/ServerTechnologies/simple-xray-core/refs/heads/main/xhttp-xray-install | bash
 ```
