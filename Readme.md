@@ -14,7 +14,8 @@
 - 10 GB диска  
 - ОС Ubuntu 22 x64 или Ubuntu 24 x64
 
-## Как пользоваться скриптом
+
+## Как пользоваться скриптом. Старая инструкция из видео. Установка с протоколом Vless TCP Reality
 
 Скрипт создавался и тестировался под ОС Ubuntu 22 x64 и Ubuntu 24 x64. На других ОС может работать некорректно. Чтобы скачать и запустить скрипт, используйте эту команду:
 
@@ -59,6 +60,37 @@ sharelink
 ```sh
 cat help
 ```
+
+## Проблемы с доступом по протоколу Vless на транспорте TCP.
+> Многие заметили, что с доступностью Vless на транспорте TCP наблюдались некоторые проблемы. Я добавил вариацию этого скрипта с протоколом XHTTP. Важно! XHTTP - сравнительно новый транспорт, поэтому далеко не все клиенты его поддерживают. Список клиентов есть в текстовой версии видео на Github.
+- [Ссылка на видео YouTube про XHTTP] (https://youtu.be/XASBkzQE00s)
+- [Текстовая версия видео на Github] (https://github.com/ServerTechnologies/3x-ui-with-xhttp)
+
+Если вы уже установили ядро по видео с транспортом tcp, не спешите все сносить и устанавливать XHTTP. Для начала просто обновите ядро командой
+```sh
+bash -c "$(curl -L https://github.com/XTLS/Xray-install/raw/main/install-release.sh)" @ install
+```
+Если обновление не помогло, то можно приступать к установке новой версии скрипта с транспортом XHTTP. На всякий случай создадим бэкап файла конфигурации и файла с ключами, если вдруг захочется откатится обратно на tcp
+```sh
+cp /usr/local/etc/xray/config.json /usr/local/etc/xray/config.json.old
+cp /usr/local/etc/xray/.keys /usr/local/etc/xray/.keys.old
+```
+Чтобы восстановить конфигурацию, введите:
+```sh
+wget -qO- https://raw.githubusercontent.com/ServerTechnologies/simple-xray-core/refs/heads/main/xray-install | bash
+mv /usr/local/etc/xray/config.json.old /usr/local/etc/xray/config.json
+mv /usr/local/etc/xray/.keys.old /usr/local/etc/xray/.keys
+systemctl restart xray
+```
+Будет переустановлено ядро, восстановлена старая конфигурация, в том числе старые клиенты.
+
+## Установка с транспортом XHTTP.
+Установка производится слудующей командой
+```sh
+wget -qO- https://raw.githubusercontent.com/ServerTechnologies/simple-xray-core/refs/heads/main/xhttp-xray-install | bash
+```
+Команды для управления пользователями те же самые, что и в предыдущем пункте
+
 
 ## Полезные ссылки
 

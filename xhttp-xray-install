@@ -1,5 +1,5 @@
 #!/bin/bash
-echo "Будет установлен Vless с транспортом TCP"
+echo "Будет установлен Vless с транспортом XHTTP"
 sleep 3
 apt update
 apt install qrencode curl jq -y
@@ -43,6 +43,13 @@ cat << EOF > /usr/local/etc/xray/config.json
                     "geosite:category-ads-all"
                 ],
                 "outboundTag": "block"
+            },
+            {
+                "type": "field",
+                "ip": [
+                    "geoip:cn"
+                ],
+                "outboundTag": "block"
             }
         ]
     },
@@ -56,18 +63,20 @@ cat << EOF > /usr/local/etc/xray/config.json
                     {
                         "email": "main",
                         "id": "$uuid",
-                        "flow": "xtls-rprx-vision"
+                        "flow": ""
                     }
                 ],
                 "decryption": "none"
             },
             "streamSettings": {
-                "network": "tcp",
+                "network": "xhttp",
+                "xhttpSettings": {
+                    "path": "/"
+                },
                 "security": "reality",
                 "realitySettings": {
                     "show": false,
-                    "dest": "github.com:443",
-                    "xver": 0,
+                    "target": "github.com:443",
                     "serverNames": [
                         "github.com",
                         "www.github.com"
@@ -85,7 +94,8 @@ cat << EOF > /usr/local/etc/xray/config.json
                 "enabled": true,
                 "destOverride": [
                     "http",
-                    "tls"
+                    "tls",
+                    "quic"
                 ]
             }
         }
@@ -140,7 +150,7 @@ pbk=$(cat /usr/local/etc/xray/.keys | awk -F': ' '/Password/ {print $2}')
 sid=$(cat /usr/local/etc/xray/.keys | awk -F': ' '/shortsid/ {print $2}')
 sni=$(jq -r '.inbounds[0].streamSettings.realitySettings.serverNames[0]' /usr/local/etc/xray/config.json)
 ip=$(timeout 3 curl -4 -s icanhazip.com)
-link="$protocol://$uuid@$ip:$port?security=reality&sni=$sni&fp=firefox&pbk=$pbk&sid=$sid&spx=/&type=tcp&flow=xtls-rprx-vision&encryption=none#vless-$ip"
+link="$protocol://$uuid@$ip:$port?security=reality&path=%2F&host=&mode=auto&sni=$sni&fp=firefox&pbk=$pbk&sid=$sid&spx=%2F&type=xhttp&encryption=none#vless-$ip"
 echo ""
 echo "Ссылка для подключения":
 echo "$link"
@@ -164,7 +174,7 @@ user_json=$(jq --arg email "$email" '.inbounds[0].settings.clients[] | select(.e
 
 if [[ -z "$user_json" ]]; then
 uuid=$(xray uuid)
-jq --arg email "$email" --arg uuid "$uuid" '.inbounds[0].settings.clients += [{"email": $email, "id": $uuid, "flow": "xtls-rprx-vision"}]' /usr/local/etc/xray/config.json > tmp.json && mv tmp.json /usr/local/etc/xray/config.json
+jq --arg email "$email" --arg uuid "$uuid" '.inbounds[0].settings.clients += [{"email": $email, "id": $uuid, "flow": ""}]' /usr/local/etc/xray/config.json > tmp.json && mv tmp.json /usr/local/etc/xray/config.json
 systemctl restart xray
 index=$(jq --arg email "$email" '.inbounds[0].settings.clients | to_entries[] | select(.value.email == $email) | .key'  /usr/local/etc/xray/config.json)
 protocol=$(jq -r '.inbounds[0].protocol' /usr/local/etc/xray/config.json)
@@ -175,7 +185,7 @@ sid=$(cat /usr/local/etc/xray/.keys | awk -F': ' '/shortsid/ {print $2}')
 username=$(jq --argjson index "$index" -r '.inbounds[0].settings.clients[$index].email' /usr/local/etc/xray/config.json)
 sni=$(jq -r '.inbounds[0].streamSettings.realitySettings.serverNames[0]' /usr/local/etc/xray/config.json)
 ip=$(curl -4 -s icanhazip.com)
-link="$protocol://$uuid@$ip:$port?security=reality&sni=$sni&fp=firefox&pbk=$pbk&sid=$sid&spx=/&type=tcp&flow=xtls-rprx-vision&encryption=none#$username"
+link="$protocol://$uuid@$ip:$port?security=reality&path=%2F&host=&mode=auto&sni=$sni&fp=firefox&pbk=$pbk&sid=$sid&spx=%2F&type=xhttp&encryption=none#$username"
 echo ""
 echo "Ссылка для подключения":
 echo "$link"
@@ -252,7 +262,7 @@ sid=$(cat /usr/local/etc/xray/.keys | awk -F': ' '/shortsid/ {print $2}')
 username=$(jq --argjson index "$index" -r '.inbounds[0].settings.clients[$index].email' /usr/local/etc/xray/config.json)
 sni=$(jq -r '.inbounds[0].streamSettings.realitySettings.serverNames[0]' /usr/local/etc/xray/config.json)
 ip=$(curl -4 -s icanhazip.com)
-link="$protocol://$uuid@$ip:$port?security=reality&sni=$sni&fp=firefox&pbk=$pbk&sid=$sid&spx=/&type=tcp&flow=xtls-rprx-vision&encryption=none#$username"
+link="$protocol://$uuid@$ip:$port?security=reality&path=%2F&host=&mode=auto&sni=$sni&fp=firefox&pbk=$pbk&sid=$sid&spx=%2F&type=xhttp&encryption=none#$username"
 echo ""
 echo "Ссылка для подключения":
 echo "$link"
