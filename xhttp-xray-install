@@ -256,7 +256,7 @@ username=$(jq --argjson index "$index" -r '.inbounds[0].settings.clients[$index]
 sni=$(jq -r '.inbounds[0].streamSettings.realitySettings.serverNames[0]' /usr/local/etc/xray/config.json)
 path=$(jq -r '.inbounds[0].streamSettings.xhttpSettings.path' /usr/local/etc/xray/config.json)
 ip=$(curl -4 -s icanhazip.com)
-link="$protocol://$uuid@$ip:$port?security=reality&path=%2F&host=&mode=auto&sni=$sni&fp=firefox&pbk=$pbk&sid=$sid&type=xhttp&encryption=none#$username"
+link="$protocol://$uuid@$ip:$port?security=reality&path=$path&host=&mode=auto&sni=$sni&fp=firefox&pbk=$pbk&sid=$sid&type=xhttp&encryption=none#$username"
 echo ""
 echo "Ссылка для подключения":
 echo "$link"
