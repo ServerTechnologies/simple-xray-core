@@ -43,13 +43,6 @@ cat << EOF > /usr/local/etc/xray/config.json
                     "geosite:category-ads-all"
                 ],
                 "outboundTag": "block"
-            },
-            {
-                "type": "field",
-                "ip": [
-                    "geoip:cn"
-                ],
-                "outboundTag": "block"
             }
         ]
     },
@@ -82,8 +75,6 @@ cat << EOF > /usr/local/etc/xray/config.json
                         "www.github.com"
                     ],
                     "privateKey": "$privatkey",
-                    "minClientVer": "",
-                    "maxClientVer": "",
                     "maxTimeDiff": 0,
                     "shortIds": [
                         "$shortsid"
@@ -149,8 +140,9 @@ uuid=$(cat /usr/local/etc/xray/.keys | awk -F': ' '/uuid/ {print $2}')
 pbk=$(cat /usr/local/etc/xray/.keys | awk -F': ' '/Password/ {print $2}')
 sid=$(cat /usr/local/etc/xray/.keys | awk -F': ' '/shortsid/ {print $2}')
 sni=$(jq -r '.inbounds[0].streamSettings.realitySettings.serverNames[0]' /usr/local/etc/xray/config.json)
+path=$(jq -r '.inbounds[0].streamSettings.xhttpSettings.path' /usr/local/etc/xray/config.json)
 ip=$(timeout 3 curl -4 -s icanhazip.com)
-link="$protocol://$uuid@$ip:$port?security=reality&path=%2F&host=&mode=auto&sni=$sni&fp=firefox&pbk=$pbk&sid=$sid&spx=%2F&type=xhttp&encryption=none#vless-$ip"
+link="$protocol://$uuid@$ip:$port?security=reality&path=$path&host=&mode=auto&sni=$sni&fp=firefox&pbk=$pbk&sid=$sid&type=xhttp&encryption=none#vless-$ip"
 echo ""
 echo "Ссылка для подключения":
 echo "$link"
@@ -184,8 +176,9 @@ pbk=$(cat /usr/local/etc/xray/.keys | awk -F': ' '/Password/ {print $2}')
 sid=$(cat /usr/local/etc/xray/.keys | awk -F': ' '/shortsid/ {print $2}')
 username=$(jq --argjson index "$index" -r '.inbounds[0].settings.clients[$index].email' /usr/local/etc/xray/config.json)
 sni=$(jq -r '.inbounds[0].streamSettings.realitySettings.serverNames[0]' /usr/local/etc/xray/config.json)
+path=$(jq -r '.inbounds[0].streamSettings.xhttpSettings.path' /usr/local/etc/xray/config.json)
 ip=$(curl -4 -s icanhazip.com)
-link="$protocol://$uuid@$ip:$port?security=reality&path=%2F&host=&mode=auto&sni=$sni&fp=firefox&pbk=$pbk&sid=$sid&spx=%2F&type=xhttp&encryption=none#$username"
+link="$protocol://$uuid@$ip:$port?security=reality&path=$path&host=&mode=auto&sni=$sni&fp=firefox&pbk=$pbk&sid=$sid&type=xhttp&encryption=none#$username"
 echo ""
 echo "Ссылка для подключения":
 echo "$link"
@@ -261,8 +254,9 @@ pbk=$(cat /usr/local/etc/xray/.keys | awk -F': ' '/Password/ {print $2}')
 sid=$(cat /usr/local/etc/xray/.keys | awk -F': ' '/shortsid/ {print $2}')
 username=$(jq --argjson index "$index" -r '.inbounds[0].settings.clients[$index].email' /usr/local/etc/xray/config.json)
 sni=$(jq -r '.inbounds[0].streamSettings.realitySettings.serverNames[0]' /usr/local/etc/xray/config.json)
+path=$(jq -r '.inbounds[0].streamSettings.xhttpSettings.path' /usr/local/etc/xray/config.json)
 ip=$(curl -4 -s icanhazip.com)
-link="$protocol://$uuid@$ip:$port?security=reality&path=%2F&host=&mode=auto&sni=$sni&fp=firefox&pbk=$pbk&sid=$sid&spx=%2F&type=xhttp&encryption=none#$username"
+link="$protocol://$uuid@$ip:$port?security=reality&path=%2F&host=&mode=auto&sni=$sni&fp=firefox&pbk=$pbk&sid=$sid&type=xhttp&encryption=none#$username"
 echo ""
 echo "Ссылка для подключения":
 echo "$link"
